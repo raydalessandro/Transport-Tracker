@@ -1,0 +1,32 @@
+name: Build Android APK
+
+on:
+  workflow_dispatch:        # puoi lanciarlo a mano da GitHub
+  push:
+    branches: [ main ]      # se il branch si chiama master, cambia in master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.16.0'   # compatibile con il template GPS, va bene anche per BikerZone
+
+      - name: Flutter pub get
+        run: flutter pub get
+
+      # build debug (più facile da installare per test)
+      - name: Build debug APK
+        run: flutter build apk --debug
+
+      - name: Upload debug APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: bikerzone-debug-apk
+          path: build/app/outputs/flutter-apk/app-debug.apk
